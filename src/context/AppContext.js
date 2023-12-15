@@ -59,16 +59,31 @@ export const AppReducer = (state,action) => {
             };
         case 'SET_BUDGET':
             action.type = "DONE";
-            state.budget = action.payload;
+            const newBudget = action.payload;
+            const totalExpenses = state.expenses.reduce((total,item) => total + item.cost,0);
+            const remainingBudget = newBudget - totalExpenses;
 
-            return {
-                ...state,
-            };
+            if(newBudget > 20000) {
+                alert("Budget cannot exceed 20,000!");
+                return {
+                    ...state,
+                };
+            } else if(remainingBudget < 0) {
+                alert("Budget cannot be lower than the spending!");
+                return {
+                    ...state,
+                };
+            } else {
+                state.budget = newBudget;
+                return {
+                    ...state,
+                };
+            }
         case 'CHG_CURRENCY':
             action.type = "DONE";
             state.currency = action.payload;
             return {
-                ...state
+                ...state,
             };
 
         default:
@@ -105,6 +120,8 @@ export const AppProvider = (props) => {
         },0);
         remaining = state.budget - totalExpenses;
     }
+
+
 
     return (
         <AppContext.Provider
